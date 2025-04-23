@@ -17,6 +17,7 @@ namespace SalesForceFunctionApp
 				.ConfigureServices(services =>
 				{
 					services.AddHttpClient();
+					services.AddScoped<IAuthenticationService, AuthenticationService>();
 					services.AddScoped<ISalesForceService, SalesForceService>();
 					services.AddScoped<IServiceBusService, ServiceBusService>();
 				})

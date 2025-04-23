@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using SalesForceFunctionApp.DTOs;
 using SalesForceFunctionApp.Models;
 using SalesForceFunctionApp.Services.Interfaces;
 
@@ -14,31 +15,41 @@ namespace SalesForceFunctionApp.Functions
         private readonly ILogger _logger;
         private readonly ISalesForceService _salesForceService;
         private readonly IServiceBusService _serviceBusService;
+        private readonly IAuthenticationService _authenticationService;
 
-        public GetAllSalesForce(ILoggerFactory loggerFactory, ISalesForceService salesForceService, IServiceBusService serviceBusService)
+        public GetAllSalesForce(ILoggerFactory loggerFactory, ISalesForceService salesForceService, IServiceBusService serviceBusService, IAuthenticationService authenticationService)
         {
             _logger = loggerFactory.CreateLogger<GetAllSalesForce>();
             _salesForceService = salesForceService;
             _serviceBusService = serviceBusService;
+            _authenticationService = authenticationService;
         }
 
         [Function("GetAllSalesForce")]
-        public async Task RunAsync([TimerTrigger("0 */30 * * * *")] MyInfo myTimer)
+        public async Task RunAsync([TimerTrigger("0 */1 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             _logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
-            // For simplicity, I have stored the access token in the environment variable, however there would be separate
-            // api end-point (an HTTP Triggered function) to deal with authentication, and a better approach would be to cache the token,
-            // since this functions is triggered every 30 minutes.
-            IEnumerable<Account> accounts = await _salesForceService.FetchSalesForceData(Environment.GetEnvironmentVariable("AccessToken"));
-            if (accounts != null && accounts.Any())
+           
+            // Authenticate with SalesForce
+            AuthenticationDTO res = await _authenticationService.Authenticate();
+            if (res != null)
             {
-				_logger.LogInformation($"Fetched {accounts.Count()} accounts from SalesForce.");
-				await _serviceBusService.SendMessage(accounts);
+                _logger.LogInformation($"access token in trigger function: {res.AccessToken}");
+                IEnumerable<Account> accounts = await _salesForceService.FetchSalesForceData(res.AccessToken);
+                if (accounts != null && accounts.Any())
+                {
+				    _logger.LogInformation($"Fetched {accounts.Count()} accounts from SalesForce.");
+				    await _serviceBusService.SendMessage(accounts);
+			    }
+			    else
+                {
+				    _logger.LogWarning("No accounts fetched from SalesForce.");
+			    }
 			}
-			else
+            else
             {
-				_logger.LogWarning("No accounts fetched from SalesForce.");
+				_logger.LogError("Authentication Failed.");
 			}
 
         }
