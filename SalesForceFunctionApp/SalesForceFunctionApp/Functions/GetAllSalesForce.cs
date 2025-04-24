@@ -25,8 +25,9 @@ namespace SalesForceFunctionApp.Functions
             _authenticationService = authenticationService;
         }
 
+        // triggered every 30 minutes. Decrease the interval to test the function faster.
         [Function("GetAllSalesForce")]
-        public async Task RunAsync([TimerTrigger("0 */1 * * * *")] MyInfo myTimer)
+        public async Task RunAsync([TimerTrigger("0 */30 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             _logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");

@@ -7,10 +7,10 @@
     "EndPoint": "https://orgfarm-20b907f818-dev-ed.develop.my.salesforce.com/services/data/v63.0/query/?q=SELECT+Id,Name+FROM+Account",
     "ServiceBusConnectionString": "Endpoint=sb://dsc00000075-datasynccloud-dev.servicebus.windows.net/;SharedAccessKeyName=DevTest;SharedAccessKey=BTqdrsBxiBawz5AOiJQTE8asCKp5RghRs+ASbC2CjmA=",
     "QueueUrl": "https://dsc00000075-datasynccloud-dev.servicebus.windows.net/devtest",
-    "Accountname": "",
-    "Password": "",
-    "ClientId": "",
-    "ClientSecret": "",
+    "Accountname": "mairaaltaf63769@agentforce.com",
+    "Password": "Islamabad1234@",
+    "ClientId": "3MVG9dAEux2v1sLvdLxEtgDWiNnhmyMbdosZTmZ0eRpd2oO6Ae9aXc9Y46.PRQ7r1bzktB29qkiQp2k5_4rRy",
+    "ClientSecret": "718DEDE15153C060CAB309EB2B288A96C42FC63CC90515DE0C78FB70A300B6C0",
     "OAuthEndpoint": "https://login.salesforce.com/services/oauth2/token?"
   }
 }
